@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.IO;
 namespace S_T_P_csh
 {
     /// <summary>
     /// .
     ///
-    class w_c                    ///////for take each word repet how meny
+    class w_c                    ///////for take each word repet how meny?
     {
         public int count;
         public string word;
@@ -52,7 +52,7 @@ namespace S_T_P_csh
             count = 0;
             frist = null;
         }
-        public string place(int n)
+        public w_c place(int n)
         {
             listNode current = frist;
             int i = 1;
@@ -61,7 +61,7 @@ namespace S_T_P_csh
                 current = current.Next;
                 i++;
             }
-            return current.Data.word;
+            return current.Data;
         }
         public void Add_frist(w_c x)
         {
@@ -137,11 +137,7 @@ namespace S_T_P_csh
             Console.WriteLine(count.ToString());
 
         }
-
-
     }
-
-
 
     /// </summary>
     /// 
@@ -151,19 +147,70 @@ namespace S_T_P_csh
 
         static void Main(string[] args)
         {
+            string s1, s2, t1, t2; ;
+            Console.WriteLine(@"Enter Address Text 1 (ex: c:\ali.txt):");
+            s1 = Console.ReadLine().ToString();
+            t1 = System.IO.File.ReadAllText(s1);
+            Console.WriteLine("Enter Address Text 2 (ex: c:\ali2.txt)::");
+            s2 = Console.ReadLine().ToString();
+            t2 = System.IO.File.ReadAllText(s2);
+            //Console.WriteLine(t1);
+            //Console.WriteLine(t2);
 
-            string s2 = "my name is \nali najafi.";
+            linkList st;
+            linkList st2;
 
             linkList str;
             linkList str2;
 
-            str = word_word(s2);
-            str.show();
-            str2 = word_count(str);    //////bebin
-            Console.WriteLine("plase= " + str.place(1));
-            str2.show();
-        }
+            st = word_word(t1);
+            st2 = word_count(st);
 
+            str = word_word(t2);
+            //str.show();
+            str2 = word_count(str);    //////bebin
+            float b = cmp(st2, str2);
+            Console.WriteLine("semblance = " + b.ToString() + "%");
+
+
+        }
+        public static float cmp(linkList a, linkList b)
+        {
+            float sum = 0;
+            int m;
+            float max = 0, min = 0;
+            if (a.count >= b.count)
+                m = a.count;
+            else
+                m = b.count;
+
+            for (int i = 1; i <= a.count; i++)
+            {
+                for (int j = 1; j <= b.count; j++)
+                {
+                    if (a.place(i).word == b.place(j).word)
+                    {
+                        if (a.place(i).count >= b.place(j).count)
+                        {
+                            max = a.place(i).count;
+                            min = b.place(j).count;
+                        }
+                        else
+                        {
+                            min = a.place(i).count;
+                            max = b.place(j).count;
+                        }
+                        float h = (min / max);
+                        sum += h * 100;
+                        b.delelte_place_n(j);
+                        break;
+                    }
+                }
+            }
+
+            float c = sum / (float)m;
+            return c;
+        }
         public static linkList word_word(string x)        /////for spilt sententes and put linklist
         {
             linkList str = new linkList();
@@ -203,7 +250,7 @@ namespace S_T_P_csh
             {
                 for (int j = i + 1; j < str.count; j++)
                 {
-                    if (str.place(i) == str.place(j))
+                    if (str.place(i).word == str.place(j).word)
                     {
                         str.delelte_place_n(j);
                         c++;
@@ -211,7 +258,7 @@ namespace S_T_P_csh
                     }
                 }
                 st = new w_c();
-                st.word = str.place(i);
+                st.word = str.place(i).word;
                 st.count = c;
                 c = 1;
                 a.Add_last(st);
