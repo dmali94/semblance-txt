@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Net;
 namespace S_T_P_csh
 {
     /// <summary>
@@ -147,32 +148,73 @@ namespace S_T_P_csh
 
         static void Main(string[] args)
         {
-            string s1, s2, t1, t2; ;
-            Console.WriteLine(@"Enter Address Text 1 (ex: c:\ali.txt):");
-            s1 = Console.ReadLine().ToString();
-            t1 = System.IO.File.ReadAllText(s1);
-            Console.WriteLine("Enter Address Text 2 (ex: c:\ali2.txt)::");
-            s2 = Console.ReadLine().ToString();
-            t2 = System.IO.File.ReadAllText(s2);
-            //Console.WriteLine(t1);
-            //Console.WriteLine(t2);
-
+            string s1, s2, t1 = "", t2;
             linkList st;
             linkList st2;
 
             linkList str;
             linkList str2;
+            string ch;
+            //t1 = code(@"http://doctorwp.com/%D8%A2%D9%85%D9%88%D8%B2%D8%B4-%D8%A7%D8%B3%D8%AA%D9%81%D8%A7%D8%AF%D9%87-%D9%85%D9%86%D8%A7%D8%B3%D8%A8-%D8%A7%D8%B2-%D8%AA%DA%AF-%D8%B9%D9%86%D9%88%D8%A7%D9%86-h1-h2-h3/");
+            //System.IO.File.WriteAllText(@"e:\all2.txt", t1);
+            //t2 = code(@"http://www.yjc.ir/fa/news/5545002/%D8%B1%D9%87%E2%80%8C%D9%BE%DB%8C%DA%A9-%D8%B5%D9%84%D8%A7%D8%AD%DB%8C%D8%AA-%D9%85%DB%8C%D9%86%D9%88-%D8%AE%D8%A7%D9%84%D9%82%DB%8C-%D8%B1%D8%AF-%D9%86%D8%B4%D8%AF%D9%87-%D8%A8%D9%84%DA%A9%D9%87-%D8%A2%D8%B1%D8%A7%D8%A1-%D8%A7%D8%A8%D8%B7%D8%A7%D9%84-%D8%B4%D8%AF%D9%87-%D8%A7%D8%B3%D8%AA-%D8%A7%D9%86%D8%AA%D9%82%D8%A7%D9%84-%D8%A7%D9%86%D8%AA%D8%AE%D8%A7%D8%A8-%DB%8C%DA%A9-%D9%86%D9%81%D8%B1-%D8%A8%D9%87-%D9%85%DB%8C%D8%A7%D9%86-%D8%AF%D9%88%D8%B1%D9%87%E2%80%8C%D8%A7%DB%8C-%D8%AF%D8%B1-%D8%A7%D8%B5%D9%81%D9%87%D8%A7%D9%86");
+            //Console.WriteLine(t2.Length);
 
-            st = word_word(t1);
-            st2 = word_count(st);
+            //Console.WriteLine(t1);
+            //Console.WriteLine(t2);
+            Console.WriteLine("what do you want (text (t) || webPage (w)) for compare?  :  ");
+            ch = (Console.ReadLine());
+            if (ch == "t")
+            {
+                Console.WriteLine(@"Enter Address Text 1 (ex: e:\ali.txt):");
+                s1 = Console.ReadLine().ToString();
+                t1 = System.IO.File.ReadAllText(s1);
+                Console.WriteLine(@"Enter Address Text 2 (ex: e:\ali2.txt):");
+                s2 = Console.ReadLine().ToString();
+                t2 = System.IO.File.ReadAllText(s2);
+                st = word_word(t1);
+                st2 = word_count(st);
 
-            str = word_word(t2);
-            //str.show();
-            str2 = word_count(str);    //////bebin
-            float b = cmp(st2, str2);
-            Console.WriteLine("semblance = " + b.ToString() + "%");
+                str = word_word(t2);
+                //str.show();
+                str2 = word_count(str);    //////bebin
+                float b = cmp(st2, str2);
+                Console.WriteLine("semblance = " + b.ToString() + "%");
 
 
+
+            }
+            else if (ch == "w")
+            {
+                Console.WriteLine(@"Enter webPage Address  1 :");
+                s1 = Console.ReadLine().ToString();
+                t1 = code(s1);
+
+                Console.WriteLine(@"Enter wePage Address  2 :");
+                s2 = Console.ReadLine().ToString();
+                t2 = System.IO.File.ReadAllText(s2);
+                t2 = code(s2);
+                st = word_word(t1);
+                st2 = word_count(st);
+
+                str = word_word(t2);
+                //str.show();
+                str2 = word_count(str);    //////bebin
+                float b = cmp(st2, str2);
+                Console.WriteLine("semblance = " + b.ToString() + "%");
+
+            }
+            else
+            {
+                Console.WriteLine("not find.\n"); return;
+            }
+
+
+
+
+            //////  Console.WriteLine(t1);
+
+            // System.IO.File.WriteAllText(@"e:\all.txt", t1);
         }
         public static float cmp(linkList a, linkList b)
         {
@@ -240,6 +282,27 @@ namespace S_T_P_csh
             str2 = word_word(m2);
 
             return 100;
+        }
+        public static String code(string Url)
+        {
+
+            try
+            {
+                HttpWebRequest myRequest = (HttpWebRequest)WebRequest.Create(Url);
+                myRequest.Method = "GET";
+                WebResponse myResponse = myRequest.GetResponse();
+                StreamReader sr = new StreamReader(myResponse.GetResponseStream(), System.Text.Encoding.UTF8);
+                string result = sr.ReadToEnd();
+                sr.Close();
+                myResponse.Close();
+
+                return result;
+            }
+            catch
+            {
+                Console.WriteLine("Not find!!");
+                return "";
+            }
         }
         public static linkList word_count(linkList str)     //////for count of evry word...
         {
