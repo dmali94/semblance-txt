@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Net;
+using HtmlAgilityPack;
+using System.Text.RegularExpressions;
 namespace S_T_P_csh
 {
     /// <summary>
@@ -155,13 +157,7 @@ namespace S_T_P_csh
             linkList str;
             linkList str2;
             string ch;
-            //t1 = code(@"http://doctorwp.com/%D8%A2%D9%85%D9%88%D8%B2%D8%B4-%D8%A7%D8%B3%D8%AA%D9%81%D8%A7%D8%AF%D9%87-%D9%85%D9%86%D8%A7%D8%B3%D8%A8-%D8%A7%D8%B2-%D8%AA%DA%AF-%D8%B9%D9%86%D9%88%D8%A7%D9%86-h1-h2-h3/");
-            //System.IO.File.WriteAllText(@"e:\all2.txt", t1);
-            //t2 = code(@"http://www.yjc.ir/fa/news/5545002/%D8%B1%D9%87%E2%80%8C%D9%BE%DB%8C%DA%A9-%D8%B5%D9%84%D8%A7%D8%AD%DB%8C%D8%AA-%D9%85%DB%8C%D9%86%D9%88-%D8%AE%D8%A7%D9%84%D9%82%DB%8C-%D8%B1%D8%AF-%D9%86%D8%B4%D8%AF%D9%87-%D8%A8%D9%84%DA%A9%D9%87-%D8%A2%D8%B1%D8%A7%D8%A1-%D8%A7%D8%A8%D8%B7%D8%A7%D9%84-%D8%B4%D8%AF%D9%87-%D8%A7%D8%B3%D8%AA-%D8%A7%D9%86%D8%AA%D9%82%D8%A7%D9%84-%D8%A7%D9%86%D8%AA%D8%AE%D8%A7%D8%A8-%DB%8C%DA%A9-%D9%86%D9%81%D8%B1-%D8%A8%D9%87-%D9%85%DB%8C%D8%A7%D9%86-%D8%AF%D9%88%D8%B1%D9%87%E2%80%8C%D8%A7%DB%8C-%D8%AF%D8%B1-%D8%A7%D8%B5%D9%81%D9%87%D8%A7%D9%86");
-            //Console.WriteLine(t2.Length);
 
-            //Console.WriteLine(t1);
-            //Console.WriteLine(t2);
             Console.WriteLine("what do you want (text (t) || webPage (w)) for compare?  :  ");
             ch = (Console.ReadLine());
             if (ch == "t")
@@ -192,7 +188,7 @@ namespace S_T_P_csh
 
                 Console.WriteLine(@"Enter wePage Address  2 :");
                 s2 = Console.ReadLine().ToString();
-                t2 = System.IO.File.ReadAllText(s2);
+                // t2 = System.IO.File.ReadAllText(s2);
                 t2 = code(s2);
                 st = word_word(t1);
                 st2 = word_count(st);
@@ -283,20 +279,42 @@ namespace S_T_P_csh
 
             return 100;
         }
-        public static String code(string Url)
+        public static String code(string url)
         {
 
             try
             {
-                HttpWebRequest myRequest = (HttpWebRequest)WebRequest.Create(Url);
-                myRequest.Method = "GET";
-                WebResponse myResponse = myRequest.GetResponse();
-                StreamReader sr = new StreamReader(myResponse.GetResponseStream(), System.Text.Encoding.UTF8);
-                string result = sr.ReadToEnd();
-                sr.Close();
-                myResponse.Close();
 
-                return result;
+
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);   //request for website1 
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                StreamReader src = new StreamReader(response.GetResponseStream());    //get html 
+                string srce1 = src.ReadToEnd();                                        // save all html in sting
+                MatchCollection m1 = Regex.Matches(srce1, @"<title>\s*(.+?)\s*</title>", RegexOptions.Singleline); //Specify web title
+                string title1 = " ";
+                foreach (Match m in m1)  //get inner text from web title
+                {
+                    if (m.Success)
+                    {
+                        title1 = m.Groups[1].Value;
+                    }
+                }
+
+
+
+                //-----------------git inner text-----------------------
+                HtmlAgilityPack.HtmlDocument doc1 = new HtmlAgilityPack.HtmlDocument();
+                HtmlWeb hw1 = new HtmlWeb();
+                doc1 = hw1.Load(@"e:\sourc1.txt");
+                HtmlNodeCollection nodes1 = doc1.DocumentNode.SelectNodes("//body//text()[(normalize-space(.) != '') and not(parent::script) and not(*)]");
+                string result1 = " ";
+                foreach (var item in nodes1)
+                {
+                    result1 += item.InnerText;
+                    result1 += ' ';
+                }
+
+                return result1;
             }
             catch
             {
